@@ -6,22 +6,31 @@
     $feedback=('');
     $optionstatus=('');
     $submit=('');
+    $rawstatus=array();
     $nosubmit=('<p>This form cannot submit without mailing list data.</p>');
-    $csv=('data/mydata.csv');    
+    $csv=('data/students.csv');    
     if(file_exists($csv)){    
         if(filesize($csv) != 0){
             $submit=('<input type="submit" name="submittedForm" value="SEND EMAILS" />');
+            // set up status dropdown
+            $optionstatus='<option value="">Please SELECT</option>';
             $csv=fopen($csv, 'r');
             while(!feof($csv)){
                 $csvrecord=fgetcsv($csv,1024);
                 $userstatus=$csvrecord[2];
-                   if ($userstatus != null || $userstatus != '' || strlen(trim($userstatus)) != 0){
-                $optionstatus.='<option value="'.$userstatus.'">'.$userstatus.'</option>';
-                   }
+                if ($userstatus != null || $userstatus != '' || strlen(trim($userstatus)) != 0){
+                    $rawstatus[]=$userstatus;
+                }
             }
             fclose($csv);
+            $uniquestatus=array_unique($rawstatus);
+            foreach ($uniquestatus as $status){
+                $optionstatus.='<option value="'.$status.'">'.$status.'</option>';
+            }
+            $optionstatus.='<option value="*">ALL</option>';
+            // on submit, send emails            
             if (isset($_POST['submittedForm'])) {
-               $csv=('data/mydata.csv');
+               $csv=('data/students.csv');
                $studentstatus=$_POST['studentstatus'];
                $accountname=$_POST['accountname'];
                $accountemail=$_POST['accountemail'];       
@@ -35,7 +44,7 @@
                    if ($useremail != null || $useremail != '' || strlen(trim($useremail)) != 0){
                        $userfullname=$csvrecord[1];  // might not use at all if lastname,firstname -- unless...?
                        $userstatus=$csvrecord[2];    // keyed to a dropdown selection on the form
-                       if ($studentstatus==$userstatus || $studentstatus == ''){  
+                       if ($studentstatus==$userstatus || $studentstatus == '*'){  
                             $mail = new PHPMailer();
                             $mail->IsSMTP();               // set mailer to use SMTP
                             $mail->Host = ('mail.iit.edu');  // specify main and backup server
@@ -58,7 +67,7 @@
                     }
                 }
                 fclose($csv);
-                if (unlink('data/mydata.csv')){
+                if (unlink('data/students.csv')){
                     $feedback.=' Data removed.';
                 }else{
                     $feedback.=' Data still there?!?';
@@ -69,6 +78,7 @@
         }
     }else{
         $feedback = ('Awaiting mailing list data. Once data arrives, refresh this page.');
+        $optionstatus='<option value="">* AWAITING DATA *</option>';
         $submit = $nosubmit;
     }
     
@@ -79,6 +89,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>ITM Mass Email</title>
         <link rel="stylesheet" type="text/css" href="styles/tinymce.css" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
         <script type="text/javascript" src="tinymce/jscripts/tiny_mce/tiny_mce.js" ></script>
         <script type="text/javascript">
             tinyMCE.init({
@@ -114,7 +125,6 @@
                 <div class="row">
                     <label id="lblstudentstatus" for="studentstatus">Student Status</label>
                     <select name="studentstatus" title="Student Status is a required field">
-                        <option value="">ALL</opiton>
                         <?=$optionstatus ?>
                     </select>
                 </div>
