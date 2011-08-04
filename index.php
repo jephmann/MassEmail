@@ -6,66 +6,70 @@
     $feedback=('');
     $optionstatus=('');
     $submit=('');
-    
+    $nosubmit=('<p>This form cannot submit without mailing list data.</p>');
     $csv=('data/mydata.csv');    
-    if(file_exists($csv) || filesize($csv) != 0){
-        $submit=('<input type="submit" name="submittedForm" value="SEND EMAILS" />');
-
-        $csv=fopen($csv, 'r');
-        while(!feof($csv)){
-            $csvrecord=fgetcsv($csv,1024);
-            $userstatus=$csvrecord[2];
-               if ($userstatus != null || $userstatus != '' || strlen(trim($userstatus)) != 0){
-            $optionstatus.='<option value="'.$userstatus.'">'.$userstatus.'</option>';
-               }
-        }
-        fclose($csv);
-
-        if (isset($_POST['submittedForm'])) {
-           $csv=('data/mydata.csv');
-           $studentstatus=$_POST['studentstatus'];
-           $accountname=$_POST['accountname'];
-           $accountemail=$_POST['accountemail'];       
-           $esubject=$_POST['emailsubject'];
-           $ebody=$_POST['emailbody'];
-           // open csv and loop through it
-           $csv = fopen($csv, 'r');
-           while (!feof($csv)) {
-               $csvrecord = fgetcsv($csv, 1024);
-               $useremail=$csvrecord[0];     // REQUIRED; if blank, skip to next record
-               if ($useremail != null || $useremail != '' || strlen(trim($useremail)) != 0){
-                   $userfullname=$csvrecord[1];  // might not use at all if lastname,firstname -- unless...?
-                   $userstatus=$csvrecord[2];    // keyed to a dropdown selection on the form
-                   if ($studentstatus==$userstatus || $studentstatus == ''){  
-                        $mail = new PHPMailer();
-                        $mail->IsSMTP();               // set mailer to use SMTP
-                        $mail->Host = ('mail.iit.edu');  // specify main and backup server
-                        $mail->From = $accountemail;
-                        $mail->FromName = $accountname;
-                        $mail->AddAddress($useremail, $userfullname);
-                        $mail->AddReplyTo($accountemail, $accountname);
-                        $mail->WordWrap = 60;
-                        $mail->IsHTML(true);
-                        $mail->Subject = $esubject;
-                        $mail->Body = $ebody;
-                        if(!$mail->Send())  {
-                            $feedback = ('Message could not be sent. Mailer Error: '.$mail->ErrorInfo);
-                            exit;
-                        } else {
-                            $feedback = ('MAIL SENT!');
-                        }
+    if(file_exists($csv)){    
+        if(filesize($csv) != 0){
+            $submit=('<input type="submit" name="submittedForm" value="SEND EMAILS" />');
+            $csv=fopen($csv, 'r');
+            while(!feof($csv)){
+                $csvrecord=fgetcsv($csv,1024);
+                $userstatus=$csvrecord[2];
+                   if ($userstatus != null || $userstatus != '' || strlen(trim($userstatus)) != 0){
+                $optionstatus.='<option value="'.$userstatus.'">'.$userstatus.'</option>';
                    }
-
-                }
             }
             fclose($csv);
-        } else {
-            $feedback = ('Welcome! All fields are required.');
+            if (isset($_POST['submittedForm'])) {
+               $csv=('data/mydata.csv');
+               $studentstatus=$_POST['studentstatus'];
+               $accountname=$_POST['accountname'];
+               $accountemail=$_POST['accountemail'];       
+               $esubject=$_POST['emailsubject'];
+               $ebody=$_POST['emailbody'];
+               // open csv and loop through it
+               $csv = fopen($csv, 'r');
+               while (!feof($csv)) {
+                   $csvrecord = fgetcsv($csv, 1024);
+                   $useremail=$csvrecord[0];     // REQUIRED; if blank, skip to next record
+                   if ($useremail != null || $useremail != '' || strlen(trim($useremail)) != 0){
+                       $userfullname=$csvrecord[1];  // might not use at all if lastname,firstname -- unless...?
+                       $userstatus=$csvrecord[2];    // keyed to a dropdown selection on the form
+                       if ($studentstatus==$userstatus || $studentstatus == ''){  
+                            $mail = new PHPMailer();
+                            $mail->IsSMTP();               // set mailer to use SMTP
+                            $mail->Host = ('mail.iit.edu');  // specify main and backup server
+                            $mail->From = $accountemail;
+                            $mail->FromName = $accountname;
+                            $mail->AddAddress($useremail, $userfullname);
+                            $mail->AddReplyTo($accountemail, $accountname);
+                            $mail->WordWrap = 60;
+                            $mail->IsHTML(true);
+                            $mail->Subject = $esubject;
+                            $mail->Body = $ebody;
+                            if(!$mail->Send())  {
+                                $feedback = ('Message could not be sent. Mailer Error: '.$mail->ErrorInfo);
+                                exit;
+                            }else{
+                                $submit = $nosubmit;
+                                $feedback = ('MAIL SENT!');
+                            }
+                       }
+                    }
+                }
+                fclose($csv);
+                if (unlink('data/mydata.csv')){
+                    $feedback.=' Data removed.';
+                }else{
+                    $feedback.=' Data still there?!?';
+                }
+            }else{
+                $feedback = ('Welcome! All fields are required.');
+            }
         }
-
-    } else {
+    }else{
         $feedback = ('Awaiting mailing list data. Once data arrives, refresh this page.');
-        $submit = ('<p>This form cannot submit without mailing list data.</p>');
+        $submit = $nosubmit;
     }
     
 ?>
