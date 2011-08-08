@@ -1,67 +1,102 @@
 <?php
     error_reporting(E_ALL ^ E_DEPRECATED);
     include_once('scripts/class.phpmailer.php');
-    include('scripts/class.smtp.php'); // optional, gets called from within class.phpmailer.php if not already loaded
-    
-    $optionSELECT = '<option value="">Please SELECT</option>';
-    $optionALL = '<option value="*">ALL</option>';
-    $optionNONE = '<option value="">* AWAITING DATA *</option>';
-    $dosubmit=('<input type="submit" name="submittedForm" value="SEND EMAILS" />');
-    $nosubmit=('<p>This form cannot submit without mailing list data.</p>');
+    include('scripts/class.smtp.php');
     
     $dataitm=('data/itm.csv');
     $datastudents=('data/students.csv');
     
-    $optionfrom=$optionSELECT;
-    $openitm=fopen($dataitm,'r');
-    while(!feof($openitm)){
-        $itmrecord=fgetcsv($openitm,1024);
-        $itmaccount=$itmrecord[0];
-        $optionfrom.=('<option value="'.$itmaccount.'">'.$itmaccount.'</option>');
+    function selectoptions($csv, $field, $selectedoption){
+        $selectoptions = ('');
+        $opencsv = fopen($csv,  'r');
+        while(!feof($opencsv)){
+            $csvrecord = fgetcsv($opencsv,1024);
+            $csvdata = $csvrecord[$field];
+            if($csvdata != null || $csvdata != '' || strlen(trim($csvdata)) != 0){
+                $arraydata[] = $csvdata;
+            }
+        }
+        fclose($opencsv);
+        $uniquedata = array_unique($arraydata);
+        foreach($uniquedata as $datum){
+            if($selectedoption == $datum){
+                $selected = (' selected');
+            }else{
+                $selected = ('');
+            }
+            $selectoptions .= (chr(10).'<option'.$selected.' value="'.$datum.'">'.$datum.'</option>');
+        }
+        return $selectoptions;
     }
-    fclose($openitm);    
     
-    $feedback=('');
-    $optionto=('');
-    $submit=('');
-    $rawstatus=array();
+    $optionSELECT = chr(10).'<option value="">Please SELECT</option>';
+    $optionALL = chr(10).'<option value="*">ALL</option>';
+    $optionNONE = chr(10).'<option value="">* AWAITING DATA *</option>';
+    $dosubmit=('<input type="submit" name="submittedForm" value="SEND EMAILS" />');
+    $nosubmit=('<p>This form cannot submit without mailing list data.</p>');
+    $phpgenericerror=('<span class="phperror">required!</span>');
+    
+    $nofrom=('');
+    $noto=('');
+    $nosubject=('');
+    $nomessage=('');
+    
+    
+        $default_from=('');
+        $default_to=('');
+        $default_subject=('');
+        $default_body=('');
+    
+    // set up FROM dropdown
+    $optionfrom=$optionSELECT.selectoptions($dataitm,0,'');
     
     if(file_exists($datastudents)){    
         if(filesize($datastudents) != 0){
             $submit=$dosubmit;
             
-            // set up status dropdown
-            $optionto=$optionSELECT;
-            $openstudents=fopen($datastudents, 'r');
-            while(!feof($openstudents)){
-                $studentrecord=fgetcsv($openstudents,1024);
-                $studentstatus=$studentrecord[2];
-                if ($studentstatus != null || $studentstatus != '' || strlen(trim($studentstatus)) != 0){
-                    $rawstatus[]=$studentstatus;
-                }
-            }
-            fclose($openstudents);
-            $uniquestatus=array_unique($rawstatus);
-            foreach ($uniquestatus as $status){
-                $optionto.='<option value="'.$status.'">'.$status.'</option>';
-            }
-            $optionto.=$optionALL;
+            // set up TO dropdown            
+            $optionto=$optionSELECT.selectoptions($datastudents,2,'').$optionALL;
             
             // on submit, send emails            
             if (isset($_POST['submittedForm'])) {
-               // $csv=('data/students.csv');
-               $post_from=$_POST['optionfrom'];
-               $post_to=$_POST['optionto'];
-               $post_subject=$_POST['emailsubject'];
-               $post_body=$_POST['emailbody'];
+               $e = 0;
+               $post_from=trim($_POST['optionfrom']);
+               if (strlen($post_from) == 0){
+                   $e=$e+1;
+                   $nofrom=$phpgenericerror;
+                   }
+               $post_to=trim($_POST['optionto']);
+               if (strlen($post_to) == 0){
+                   $e=$e+1;
+                   $noto=$phpgenericerror;
+                   }
+               $post_subject=trim($_POST['emailsubject']);
+               if (strlen($post_subject) == 0){
+                   $e=$e+1;
+                   $nosubject = $phpgenericerror;
+                   }
+               $post_body=trim($_POST['emailbody']);
+               if (strlen($post_body) == 0){
+                   $e=$e+1;
+                   $nomessage = $phpgenericerror;
+                   }
+               if ($e!=0){
+                   $feedback = ('<span class="phperror">All fields are required.</span>');
+                   $optionfrom=$optionSELECT.selectoptions($dataitm,0,$post_from);
+                   $optionto=$optionSELECT.selectoptions($datastudents,2,$post_to).$optionALL;
+                   $default_from=$post_from;
+                   $default_to=$post_to;
+                   $default_subject=$post_subject;
+                   $default_body=$post_body;
+               }else{
                // open csv and loop through it
                $openstudents = fopen($datastudents, 'r');
                while (!feof($openstudents)) {
                    $studentrecord = fgetcsv($openstudents, 1024);
-                   $studentemail=$studentrecord[0];     // REQUIRED; if blank, skip to next record
+                   $studentemail=$studentrecord[0];
                    if ($studentemail != null || $studentemail != '' || strlen(trim($studentemail)) != 0){
-                       $studentfullname=$studentrecord[1];  // might not use at all if lastname,firstname -- unless...?
-                       $studentstatus=$studentrecord[2];    // keyed to a dropdown selection on the form
+                       $studentfullname=$studentrecord[1];
+                       $studentstatus=$studentrecord[2];
                        if ($post_to == $studentstatus || $post_to == '*'){
                            
                             $openitm=fopen($dataitm,'r');
@@ -110,13 +145,19 @@
                 }
                 fclose($openstudents);
                 if (unlink($datastudents)){
-                    $feedback.=' Data removed.';
+                    $feedback.=(' Data removed.');
+                    echo ('<script>alert("'.$feedback.='")</script>');
+                    header("location: " . $_SERVER['REQUEST_URI']);
                     $optionto = $optionNONE;
+                    $submit = $nosubmit;
                 }else{
-                    $feedback.=' Data still there?!?';
+                    $feedback.=(' Data still there?!? INCONCEIVABLE!!!');
                 }
+               }
             }else{
-                $feedback = ('Welcome! All fields are required.');
+                $feedback = ('All fields are required.');
+                $submit = $dosubmit;
+                $e=0;
             }
         }
         
@@ -124,7 +165,13 @@
         $feedback = ('Awaiting mailing list data. Once data arrives, refresh this page.');
         $optionto = $optionNONE;
         $submit = $nosubmit;
+        $e=0;
+        $default_from=('');
+        $default_to=('');
+        $default_subject=('');
+        $default_body=('');
     }
+    
     
 ?>
 <!DOCTYPE html>
@@ -132,11 +179,15 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>ITM Mass Email</title>
-        <link rel="stylesheet" type="text/css" href="styles/tinymce.css" />
+        <link rel="stylesheet" type="text/css" href="styles/common.css" />
         <link rel="stylesheet" type="text/css" href="styles/validationEngine.jquery.css" />
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="styles/template.jquery.css" />
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/languages/jquery.validationEngine-en.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/jquery.validationEngine.js"></script>
+        
+        
+        
         <script type="text/javascript" src="tinymce/jscripts/tiny_mce/tiny_mce.js" ></script>
         <script type="text/javascript">
             tinyMCE.init({
@@ -157,40 +208,50 @@
     </script>
         <script>
             $(document).ready(function(){
-                $("#form.id").validationEngine();
+                $("#frmMassEmail").validationEngine();
             });
         </script>
     </head>
     <body>
         <div id="page">
+            <?php //echo chr(10).$e ?>
+            <?php //echo chr(10).$default_from ?>
+            <?php //echo chr(10).$default_to ?>
+            <?php //echo chr(10).$default_subject ?>
+            <?php //echo chr(10).$default_body ?>
             <h1>Welcome to ITM Mass Email</h1>
-            <h2><?=$feedback; ?></h2>
-            <form method="post" action="" id="frmMassEmail">
+            <h3><?=$feedback; ?></h3>
+            <form name="frmMassEmail" id="frmMassEmail" method="post" action="" id="frmMassEmail">
                 <div class="row">
-                    <label id="lbloptionfrom" for="optionfrom">FROM (Select One):</label>
-                    <select id="optionfrom" name="optionfrom" title="FROM is a required field"
+                    <label id="lbloptionfrom" for="optionfrom">FROM (Select One):<?=$nofrom ?></label>
+                    <select id="optionfrom" name="optionfrom"
+                            title="FROM is a required field"
                             class="validate[required]">
-                        <?=$optionfrom ?>
+                            <?=$optionfrom ?>
                     </select>
                 </div>
                 <div class="row">
-                    <label id="lbloptionto" for="optionto">TO (Select One):</label>
-                    <select id="optionto" name="optionto" title="TO is a required field"
+                    <label id="lbloptionto" for="optionto">TO (Select One):<?=$noto ?></label>
+                    <select id="optionto" name="optionto"
+                            title="TO is a required field"
                             class="validate[required]">
-                        <?=$optionto ?>
+                            <?=$optionto ?>
                     </select>
                 </div>
                 <div class="row">
-                    <label id="lblemailsubject" for="emailsubject">SUBJECT:</label>
-                    <input id="emailsubject" name="emailsubject" type="text" size="40" title="SUBJECT is a required field" value=""
-                            class="validate[required] text-input"/>
+                    <label id="lblemailsubject" for="emailsubject">SUBJECT:<?=$nosubject ?></label>
+                    <input id="emailsubject" name="emailsubject" type="text" size="40"
+                           title="SUBJECT is a required field"
+                           value="<?=$default_subject ?>"
+                           class="validate[required] text-input"/>
                 </div>
                 <div class="row">
-                    <label id="lblemailbody" for="emailbody">MESSAGE:</label>
+                    <label id="lblemailbody" for="emailbody">MESSAGE:<?=$nomessage ?></label>
                 </div>
                 <div class="row">
-                    <textarea id="emailbody" name="emailbody" title="MESSAGE is a required field"
-                            class="validate[required] text-input"/></textarea>
+                    <textarea id="emailbody" name="emailbody"
+                              title="MESSAGE is a required field"
+                              class="validate[required] text-input"/><?=$default_body ?></textarea>
                 </div>
                 <div class="rowbtn">
                     <?=$submit; ?>
