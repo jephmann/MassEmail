@@ -1,5 +1,24 @@
 <?php
     error_reporting(E_ALL ^ E_DEPRECATED);
+    
+    session_start();
+    //  Developed by Roshan Bhattarai
+    //  Visit http://roshanbh.com.np for this script and more.
+    //  This notice MUST stay intact for legal use
+    
+    //  if session is not set redirect the user
+    if(empty($_SESSION['u_name']))
+        header("Location:login.php");
+    
+    //if logout then destroy the session and redirect the user
+    if(isset($_GET['logout']))
+        {
+        session_destroy();
+        header("Location:login.php");        
+        }
+     //   echo "<a href='index.php?logout'><b>Logout<b></a>";
+     //   echo "<div align='center'>You Are inside secured Page</a>";
+        
     include_once('scripts/class.phpmailer.php');
     include('scripts/class.smtp.php');
     
@@ -31,21 +50,19 @@
     
     $optionSELECT = chr(10).'<option value="">Please SELECT</option>';
     $optionALL = chr(10).'<option value="*">ALL</option>';
-    $optionNONE = chr(10).'<option value="">* AWAITING DATA *</option>';
-    $dosubmit=('<input type="submit" name="submittedForm" value="SEND EMAILS" />');
-    $nosubmit=('<p>This form cannot submit without mailing list data.</p>');
+    $optionNONE = chr(10).'<option value="" class="phperror">* AWAITING DATA *</option>';
+    $dosubmit=('<input taborder="50" type="submit" id="submittedForm" name="submittedForm" value="SEND EMAILS" />');
+    $nosubmit=('<p class="phperror">This form cannot submit without mailing list data.</p>');
     $phpgenericerror=('<span class="phperror">required!</span>');
     
     $nofrom=('');
     $noto=('');
     $nosubject=('');
     $nomessage=('');
-    
-    
-        $default_from=('');
-        $default_to=('');
-        $default_subject=('');
-        $default_body=('');
+    $default_from=('');
+    $default_to=('');
+    $default_subject=('');
+    $default_body=('');
     
     // set up FROM dropdown
     $optionfrom=$optionSELECT.selectoptions($dataitm,0,'');
@@ -155,7 +172,7 @@
                 }
                }
             }else{
-                $feedback = ('All fields are required.');
+                $feedback = ('All fields are required, including MESSAGES.');
                 $submit = $dosubmit;
                 $e=0;
             }
@@ -178,16 +195,13 @@
 <html class="no-js" lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>ITM Mass Email</title>
+        <title>IIT ITM Mass Email</title>
         <link rel="stylesheet" type="text/css" href="styles/common.css" />
         <link rel="stylesheet" type="text/css" href="styles/validationEngine.jquery.css" />
         <link rel="stylesheet" type="text/css" href="styles/template.jquery.css" />
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/languages/jquery.validationEngine-en.js"></script>
         <script type="text/javascript" charset="utf-8" src="js/jquery.validationEngine.js"></script>
-        
-        
-        
         <script type="text/javascript" src="tinymce/jscripts/tiny_mce/tiny_mce.js" ></script>
         <script type="text/javascript">
             tinyMCE.init({
@@ -214,17 +228,13 @@
     </head>
     <body>
         <div id="page">
-            <?php //echo chr(10).$e ?>
-            <?php //echo chr(10).$default_from ?>
-            <?php //echo chr(10).$default_to ?>
-            <?php //echo chr(10).$default_subject ?>
-            <?php //echo chr(10).$default_body ?>
             <h1>Welcome to ITM Mass Email</h1>
+            <h2><a href="index.php?logout">Logout</a></h2>
             <h3><?=$feedback; ?></h3>
             <form name="frmMassEmail" id="frmMassEmail" method="post" action="" id="frmMassEmail">
                 <div class="row">
                     <label id="lbloptionfrom" for="optionfrom">FROM (Select One):<?=$nofrom ?></label>
-                    <select id="optionfrom" name="optionfrom"
+                    <select taborder="10" id="optionfrom" name="optionfrom"
                             title="FROM is a required field"
                             class="validate[required]">
                             <?=$optionfrom ?>
@@ -232,7 +242,7 @@
                 </div>
                 <div class="row">
                     <label id="lbloptionto" for="optionto">TO (Select One):<?=$noto ?></label>
-                    <select id="optionto" name="optionto"
+                    <select taborder="20" id="optionto" name="optionto"
                             title="TO is a required field"
                             class="validate[required]">
                             <?=$optionto ?>
@@ -240,16 +250,16 @@
                 </div>
                 <div class="row">
                     <label id="lblemailsubject" for="emailsubject">SUBJECT:<?=$nosubject ?></label>
-                    <input id="emailsubject" name="emailsubject" type="text" size="40"
+                    <input taborder="30" id="emailsubject" name="emailsubject" type="text" size="40"
                            title="SUBJECT is a required field"
                            value="<?=$default_subject ?>"
                            class="validate[required] text-input"/>
                 </div>
-                <div class="row">
+                <div class="rowmessage">
                     <label id="lblemailbody" for="emailbody">MESSAGE:<?=$nomessage ?></label>
                 </div>
-                <div class="row">
-                    <textarea id="emailbody" name="emailbody"
+                <div class="rowmessage">
+                    <textarea taborder="40" id="emailbody" name="emailbody"
                               title="MESSAGE is a required field"
                               class="validate[required] text-input"/><?=$default_body ?></textarea>
                 </div>
