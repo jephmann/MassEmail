@@ -184,44 +184,46 @@
         <div id="page">
             <?php include('inc/header.php'); ?>
             <?php include('inc/nav.php'); ?>
-            <h2>Send a Mass E-Mail to Students</h2>
-            <p><?=$feedback; ?></p>
-            <form name="frmMassEmail" id="frmMassEmail" method="post" action="" id="frmMassEmail">
-                <div class="row">
-                    <label class="lbl300" id="lbloptionfrom" for="optionfrom">FROM (Select One):<?=$nofrom ?></label>
-                    <select taborder="10" id="optionfrom" name="optionfrom"
-                            title="FROM is a required field"
-                            class="validate[required]">
-                            <?=$optionfrom ?>
-                    </select>
-                </div>
-                <div class="row">
-                    <label class="lbl300" id="lbloptionto" for="optionto">TO (Select One):<?=$noto ?></label>
-                    <select taborder="20" id="optionto" name="optionto"
-                            title="TO is a required field"
-                            class="validate[required]">
-                            <?=$optionto ?>
-                    </select>
-                </div>
-                <div class="row">
-                    <label class="lbl300" id="lblemailsubject" for="emailsubject">SUBJECT:<?=$nosubject ?></label>
-                    <input taborder="30" id="emailsubject" name="emailsubject" type="text" size="40"
-                           title="SUBJECT is a required field"
-                           value="<?=$default_subject ?>"
-                           class="validate[required] text-input"/>
-                </div>
-                <div class="rowmessage">
-                    <label class="lbl650" id="lblemailbody" for="emailbody">MESSAGE:<?=$nomessage ?></label>
-                </div>
-                <div class="rowmessage">
-                    <textarea taborder="40" id="emailbody" name="emailbody"
-                              title="MESSAGE is a required field"
-                              class="validate[required] text-input"/><?=$default_body ?></textarea>
-                </div>
-                <div class="rowbtn">
-                    <input taborder="50" class="btnsubmit" type="submit" id="submittedForm" name="submittedForm" value="SEND EMAILS" />
-                </div>
-            </form>
+            <div id="content">
+                <h2>Send a Mass E-Mail to Students</h2>
+                <p><?=$feedback; ?></p>
+                <form name="frmMassEmail" id="frmMassEmail" method="post" action="" id="frmMassEmail">
+                    <div class="row">
+                        <label class="lbl300" id="lbloptionfrom" for="optionfrom">FROM (Select One):<?=$nofrom ?></label>
+                        <select taborder="10" id="optionfrom" name="optionfrom"
+                                title="FROM is a required field"
+                                class="validate[required]">
+                                <?=$optionfrom ?>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <label class="lbl300" id="lbloptionto" for="optionto">TO (Select One):<?=$noto ?></label>
+                        <select taborder="20" id="optionto" name="optionto"
+                                title="TO is a required field"
+                                class="validate[required]">
+                                <?=$optionto ?>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <label class="lbl300" id="lblemailsubject" for="emailsubject">SUBJECT:<?=$nosubject ?></label>
+                        <input taborder="30" id="emailsubject" name="emailsubject" type="text" size="40"
+                               title="SUBJECT is a required field"
+                               value="<?=$default_subject ?>"
+                               class="validate[required] text-input"/>
+                    </div>
+                    <div class="rowmessage">
+                        <label class="lbl650" id="lblemailbody" for="emailbody">MESSAGE:<?=$nomessage ?></label>
+                    </div>
+                    <div class="rowmessage">
+                        <textarea taborder="40" id="emailbody" name="emailbody"
+                                  title="MESSAGE is a required field"
+                                  class="validate[required] text-input"/><?=$default_body ?></textarea>
+                    </div>
+                    <div class="rowbtn">
+                        <input taborder="50" class="btnsubmit" type="submit" id="submittedForm" name="submittedForm" value="SEND EMAILS" />
+                    </div>
+                </form>
+            </div>
         </div>
     </body>
 </html>
