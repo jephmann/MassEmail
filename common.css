@@ -10,25 +10,110 @@
 body {
     background-color: #cccccc;
     display: block;
-    font-family: futura, arial, sans-serif;
+    line-height: normal;
 }
 #page {
-    width: 550px;
+    width: 650px;
+    margin: 0px auto;
+    display: inline-block;
+    display: block;
+    overflow: hidden;
+    background-color: whitesmoke;
+    height: 100%;
+}
+header, nav, #content {
+    width: 624px;
     margin: 0px auto;
     display: block;
+    padding: 12px;
+    clear: both;
+}
+header {
+    border-top: black 1px solid;
+    border-right: red 1px solid;
+    border-bottom: red 1px solid;
+    border-left: black 1px solid;
+    background-color: #ffffff;
+}
+nav {
+    background-color: #000000;
+    border: black 1px solid;
+}
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+nav ul li {
+    display:inline;
+    border-left: 2px solid #ffffff;
+    padding: 0px 2px;
+    font-size: 1.0em;
+    font-weight: bold;
+}
+nav ul li a {
+    text-decoration: none;
+    color: red;
+}
+nav ul li a:hover {
+    text-decoration: none;
+    color: white;
 }
 
-label{
-    display: block;
-    float: left;
-    font-weight: bold;
-    white-space: nowrap;
-    font-size: 12px;
+#content {
     
 }
+
+p, label, ul li {
+    font-size: 1.2em;
+    font-family: futura, aria, sans-serif;
+}
+
+.ulistdisc {
+    list-style: disc inside;
+    margin-left: 0px;
+    padding-left: 1em;
+    text-indent: -1em;
+}
+
+h1, h2, h3, h4, h5, h6, input, select {
+    font-weight: bold;
+    font-family: futura, aria, sans-serif;
+}
+h6 {
+    font-size: 1.3em;
+}
+h5 {
+    font-size: 1.4em;
+}
+h4 {
+    font-size: 1.5em;
+}
+h3 {
+    font-size: 1.6em;
+}
+h2 {
+    font-size: 1.7em;
+}
+h1 {
+    font-size: 1.8em;
+}
+.code {
+    background-color: #ffffff;
+    font-family: lucida console, monospace;
+    border: dotted 1px silver;
+}
+
+form {
+    border-top: solid 1px silver;
+    display: block;
+    float: left;
+    clear: both;
+}
 input, select {
-    padding: 3px 6px;
-    font-family: century schoolbook;
+    font-family: century schoolbook, times new roman, serif;
+    font-weight: bold;
+    padding: 1px 6px;
     font-size: 12px;
     /* corners */
     -webkit-border-radius: 12px;
@@ -40,16 +125,8 @@ input, select {
 input:focus, select:focus {
     background-color: #b4ddb4;
 }
-h1 {
-    font-family: futura;
-}
-h3, p {
-    font-family: century schoolbook;
-}
-h1, h2, h3, input, select {
-    font-weight: bold;
-}
-#submittedForm {
+
+.btnsubmit {
     color: #CCFFCC;
     /* gradient */
     background: #b4ddb4; /* Old browsers */
@@ -62,17 +139,29 @@ h1, h2, h3, input, select {
     background: linear-gradient(top, #b4ddb4 0%,#83c783 17%,#52b152 33%,#008a00 67%,#005700 83%,#002400 100%); /* W3C */    
 }
 
-#lbloptionfrom, #lbloptionto, #lblemailsubject {
-    width: 250px;
+label {
+    display: block;
+    float: left;
+    font-weight: bold;
+    white-space: nowrap;
+    
 }
-#lblemailbody {
-    width: 550px;
+.lbl300 {
+    width: 300px;
 }
+.lbl650 {
+    widht: 650px;
+}
+
 .row, .rowmessage, .rowbtn {
     float: left;
     display: block;
-    width: 550px;
+    clear: both;
+    width: 626px;
+}
+.row, rowmessage {
     text-align: left;
+    border-bottom: dotted 1px #666666;    
 }
 .row, .rowbtn {
     padding: 12px 0px;
@@ -80,11 +169,12 @@ h1, h2, h3, input, select {
 .rowbtn {
     text-align: right;
 }
+.rowmessage textarea {
+    margin: 0px auto;
+}
 .phperror {
     margin-left: 2px;
     font-weight: bold;
     color: red;
     font-style: italic;
-    font-family: century schoolbook;
 }
-
