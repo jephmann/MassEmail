@@ -70,8 +70,9 @@
     </head>
     <body>
         <div id="page">
-    <?php include('inc/header.php'); ?>
-    <?php include('inc/nav.php'); ?>
+            <?php include('inc/header.php'); ?>
+            <?php include('inc/nav.php'); ?>
+            <div id="content">
             <h2>Add an IIT ITM E-Mail Account</h2>
             <p><?=$feedback; ?></p>
             <form name="frmAddITM" id="frmAddITM" method="post" action="">
@@ -106,13 +107,14 @@
                         <option value="hawk.iit.edu">hawk.iit.edu</option>
                         <option value="iit.edu">iit.edu</option>
                     </select>
-                </div>
-                
+                </div>                
                 <div class="rowbtn">
                     <input taborder="50" type="submit" class="btnsubmit"
                            id="submittedForm"
                            name="submittedForm" value="ADD ACCOUNT" />
                 </div>
             </form>
+            </div>
+        </div>
     </body>
 </html>
