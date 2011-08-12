@@ -13,12 +13,15 @@
     <body>
         <div id="page">
             <?php include('inc/header.php'); ?>
-            <ul>
-                <li><a href="admin.php">Add an IIT ITM E-Mail Account</a></li>
-                <li><a href="upload.php">Upload Student Mailing List</a></li>
-                <li><a href="send.php">Send a Mass E-Mail to Students</a></li>
-                <li><a href="index.php?logout">Logout</a></li>
-            </ul>
+            <div id="content">
+                <h2>Welcome! What would you like to do?</h2>
+                <ul class="ulistdisc">
+                    <li><a href="admin.php">Add an IIT ITM E-Mail Account</a></li>
+                    <li><a href="upload.php">Upload Student Mailing List</a></li>
+                    <li><a href="send.php">Send a Mass E-Mail to Students</a></li>
+                    <li><a href="index.php?logout">Logout</a></li>
+                </ul>
+            </div>
         </div>
     </body>
 </html>
