@@ -58,23 +58,25 @@
     </head>
     <body>
         <div id="page">
-    <?php include('inc/header.php'); ?>
-            <form method="post" action="" id="login_form">
-            <div align="center">
-                <div>
-                    User Name : <input name="username" type="text" id="username" value="" maxlength="20" />
-                </div>
-                <div style="margin-top:5px">
-                    Password :
-                    &nbsp;&nbsp;
-                    <input name="password" type="password" id="password" value="" maxlength="20" />
-                </div>
-                <div class="buttondiv">
-                    <input name="Submit" type="submit" id="submit" class="btnsubmit" value="Login" style="margin-left:-10px; height:23px"  />
-                    <span id="msgbox" style="display:none"></span>
-                </div>
+            <?php include('inc/header.php'); ?>
+            <div id="content">
+                <form method="post" action="" id="login_form">
+                    <div align="center">
+                        <div class="row">
+                            <label class="lbl300" id="lblusername" for="username">User Name : </label>
+                            <input name="username" type="text" id="username" value="" maxlength="20" />
+                        </div>
+                        <div class="row" style="margin-top:5px">
+                            <label class="lbl300" id="lblpassword" for="password">Password : </label>
+                            <input name="password" type="password" id="password" value="" maxlength="20" />
+                        </div>
+                        <div class="buttondiv">
+                            <input name="Submit" type="submit" id="submit" class="btnsubmit" value="Login" style="margin-left:-10px; height:23px"  />
+                            <span id="msgbox" style="display:none"></span>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
         </div>
     </body>
 </html>
