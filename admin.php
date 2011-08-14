@@ -2,8 +2,11 @@
     include('config/session.php');
     error_reporting(E_ALL ^ E_DEPRECATED);
     include('config/db.php');
-    $feedback = 'All fields are required.';
-    $phpgenericerror=('<span class="phperror">required!</span>');    
+    include('scripts/selectoptions.php');
+    
+    $optionSELECT = (chr(10).'<option value="">Please SELECT</option>');   
+    $phpgenericerror=('<span class="phperror">required!</span>');
+    
     $noaccountname=('');
     $noaccountusername=('');
     $noaccountpassword=('');
@@ -12,6 +15,11 @@
     $default_accountusername=('');
     $default_accountpassword=('');
     $default_accountdomain=('');
+     
+    $feedback = ('All fields are required.');
+    
+    $optiondomains=$optionSELECT.selectoptions('',$host,$un,$pw,$db,'domains','domain');
+    
     if (isset($_POST['submittedForm'])) {
         $e = 0;
         $post_name=trim($_POST['accountname']);
@@ -35,7 +43,8 @@
             $noaccountdomain = $phpgenericerror;            
             }
         if ($e!=0){
-            $feedback = '<span class="phperror">All fields are required.</span>';
+            $feedback = '<span class="phperror">All fields are required.</span>';    
+            $optiondomains=$optionSELECT.selectoptions($post_domain,$host,$un,$pw,$db,'domains','domain');
             $default_accountname=$post_name;
             $default_accountusername=$post_username;
             $default_accountpassword=$post_password;
@@ -102,10 +111,7 @@
                     <select taborder="40" id="accountdomain" name="accountdomain"
                             title="Account Domain is a required field"
                             class="validate[required]">
-                        <option value="">Please SELECT</option>
-                        <option value="gmail.com">gmail.com</option>
-                        <option value="hawk.iit.edu">hawk.iit.edu</option>
-                        <option value="iit.edu">iit.edu</option>
+                                <?=$optiondomains ?>
                     </select>
                 </div>                
                 <div class="rowbtn">
