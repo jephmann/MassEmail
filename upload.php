@@ -78,7 +78,9 @@
             <?php include('inc/header.php'); ?>
             <?php include('inc/nav.php'); ?>
             <div id="content">
-                <h2>Upload Student Mailing List</h2>
+                <h2>Upload Student E-Mailing List</h2>
+                <p>This process will remove data from the system and replace it with the data which you upload.</p>
+                <p>Records with blank e-mail addresses are omitted from the system.</p>
                 <p>Doublecheck the following before uploading:</p>
                 <ul class="ulistdisc">
                     <li>Are you uploading a CSV file?</li>
@@ -98,6 +100,7 @@
                     </form>
                 </div>
             </div>
+            <?php include('inc/footer.php'); ?>
         </div>
     </body>
 </html>
